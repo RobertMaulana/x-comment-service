@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/RobertMaulana/x-comment-service/grpc"
 	"github.com/gin-gonic/gin"
 )
 
@@ -9,6 +10,9 @@ var (
 )
 
 func StartApplication() {
+	grpcServer := grpc.CommentsServer{}
+	go grpcServer.Run()
+
 	mapUrls()
 	router.Run(":8080")
 }

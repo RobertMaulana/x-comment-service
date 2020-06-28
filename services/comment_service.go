@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/RobertMaulana/x-comment-service/domain/comments"
+	"github.com/RobertMaulana/x-comment-service/proto/common"
 	"github.com/RobertMaulana/x-comment-service/utils/errors"
 )
 
@@ -16,6 +17,7 @@ type commentServiceInterface interface {
 	CreateComment(comments.CommentRequest, int64) (*comments.ApiCreationResponse, *errors.RestErr)
 	GetComments(int64) (*comments.ApiListResponse, *errors.RestErr)
 	DeleteComments(int64) (*comments.ApiGeneralResponse, *errors.RestErr)
+	GetOrganizationIdGrpc(string) (*common.Response, *errors.RestErr)
 }
 
 func (s *commentService) GetOrganizationId(organizationName string) (*comments.Organization, *errors.RestErr) {
@@ -60,6 +62,17 @@ func (s *commentService) DeleteComments(organizationId int64) (*comments.ApiGene
 		OrganizationId: organizationId,
 	}
 	result, err := dao.DeleteComments()
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (s *commentService) GetOrganizationIdGrpc(organizationName string) (*common.Response, *errors.RestErr) {
+	dao := &comments.Organization{
+		Name: organizationName,
+	}
+	result, err := dao.GetOrganizationDataGrpc()
 	if err != nil {
 		return nil, err
 	}

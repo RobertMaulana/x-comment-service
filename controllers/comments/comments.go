@@ -2,12 +2,13 @@ package comments
 
 import (
 	"github.com/RobertMaulana/x-comment-service/domain/comments"
+	"github.com/RobertMaulana/x-comment-service/proto/comment"
+	"github.com/RobertMaulana/x-comment-service/proto/common"
 	"github.com/RobertMaulana/x-comment-service/services"
 	"github.com/RobertMaulana/x-comment-service/utils/errors"
 
 	"github.com/gin-gonic/gin"
 	"net/http"
-	//"strconv"
 )
 
 func GetOrganizationId(organizationName string) (*comments.Organization, *errors.RestErr){
@@ -70,4 +71,12 @@ func DeleteComments(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, res)
+}
+
+func GetOrganizationIdGrpc(request comment.OrganizationNameRequest) *common.Response {
+	resp, err := services.CommentService.GetOrganizationIdGrpc(request.Name)
+	if err != nil {
+		return resp
+	}
+	return resp
 }

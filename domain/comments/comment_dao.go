@@ -2,8 +2,10 @@ package comments
 
 import (
 	"database/sql"
+	"encoding/json"
 	"github.com/RobertMaulana/x-comment-service/datasource/postgre/comments_db"
 	"github.com/RobertMaulana/x-comment-service/logger"
+	"github.com/RobertMaulana/x-comment-service/proto/common"
 	"github.com/RobertMaulana/x-comment-service/query"
 	"github.com/RobertMaulana/x-comment-service/utils/errors"
 	"net/http"
@@ -140,6 +142,36 @@ func (comment *CommentRequest) DeleteComments() (*ApiGeneralResponse, *errors.Re
 	res := &ApiGeneralResponse{
 		Status: http.StatusOK,
 		Message: "all comments are successful removed",
+	}
+	return res, nil
+}
+
+func (organization *Organization) GetOrganizationDataGrpc() (*common.Response, *errors.RestErr) {
+	stmt, err := comments_db.Client.Prepare(query.GetOrganizationIdByName)
+	if err != nil {
+		logger.Error("error when trying to prepare get organization id statement", err)
+		return nil, errors.InternalServerError("database error")
+	}
+	defer stmt.Close()
+	result := stmt.QueryRow("%"+organization.Name+"%")
+	if err := result.Scan(&organization.Id, &organization.Name); err != nil {
+		if err == sql.ErrNoRows {
+			byteResp, _ := json.Marshal(organization)
+			res := &common.Response{
+				Status: http.StatusOK,
+				Data: byteResp,
+				Message: "success",
+			}
+			return res, nil
+		}
+		logger.Error("error when trying to execute get organization id", err)
+		return nil, errors.InternalServerError("database error")
+	}
+	byteResp, _ := json.Marshal(organization)
+	res := &common.Response{
+		Status: http.StatusOK,
+		Data: byteResp,
+		Message: "success",
 	}
 	return res, nil
 }

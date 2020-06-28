@@ -1,0 +1,14 @@
+// protoc -I . github.com/RobertMaulana/x-comment-service/proto/comment/comment.proto --go_out=plugins=grpc:./ <--- from project root
+syntax = "proto3";
+
+import "github.com/RobertMaulana/x-comment-service/proto/common/common.proto";
+
+package comment;
+
+message OrganizationNameRequest {
+	string name = 1;
+}
+
+service Comments {
+	rpc GetOrganizationMembers (OrganizationNameRequest) returns (common.Response);
+}
