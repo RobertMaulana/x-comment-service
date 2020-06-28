@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  name: comment-service
+  labels:
+    app: comment-service
+spec:
+  selector:
+    matchLabels:
+      app: comment-service
+  strategy:
+    type: RollingUpdate
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: comment-service
+        tier: comment-service
+        role: rolling-update
+    spec:
+      containers:
+        - name: comment-service
+          image: comment-service:latest
+          imagePullPolicy: Never
+          volumeMounts:
+            - name: secret
+              mountPath: "/etc/secret"
+              readOnly: true
+          ports:
+            - containerPort: 8080
+              name: comment-rest
+            - containerPort: 6060
+              name: comment-grpc
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 6
+            periodSeconds: 10
+      volumes:
+        - name: secret
+          secret:
+            secretName: comment-svc-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: default
+  name: comment-svc
+  labels:
+    app: comment-svc
+spec:
+  type: ClusterIP
+  ports:
+    - name: comment-svc-rest
+      port: 8080
+      targetPort: 8080
+    - name: comment-svc-grpc
+      port: 6060
+      targetPort: 6060
+  selector:
+    app: comment-service
+    tier: comment-service
