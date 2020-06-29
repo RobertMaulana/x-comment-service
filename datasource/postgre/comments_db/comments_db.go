@@ -35,8 +35,8 @@ func init() {
 	}
 	Database = db
 	Client = db.DB()
-	autoCreate := os.Getenv("DB_AUTO_CREATE")
-	if autoCreate == "true" {
+	//autoCreate := os.Getenv("DB_AUTO_CREATE")
+	if true {
 		fmt.Println("Dropping and recreating all tables...")
 		commentSchema.AutoMigrate(db)
 		fmt.Println("All tables recreated successfully...")
