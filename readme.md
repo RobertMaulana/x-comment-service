@@ -17,6 +17,12 @@ Comment service will connect with User service through inter-communication using
 - Kubernetes
 
 ### How to deploy
+``$ minikube start``
+- Start minikube
+
+``$ kubectl apply -f deployment/secret.yaml``
+- Deploy initial secret containing env first before deploy the pod
+
 ``$ sh deploy.sh``
 - In this deployment command, will execute build docker image, cleanup existing deployment & pod service, and deploy it to minikube
 
