@@ -52,10 +52,11 @@ metadata:
   labels:
     app: comment-svc
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - name: comment-svc-rest
-      port: 8080
+      port: 80
+      protocol: TCP
       targetPort: 8080
     - name: comment-svc-grpc
       port: 6060
